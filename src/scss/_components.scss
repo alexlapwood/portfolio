@@ -1,0 +1,85 @@
+// Components
+
+.close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  height: 64px;
+  outline: none;
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  width: 64px;
+  z-index: 1;
+}
+
+.spacer {
+  min-height: 8vh;
+
+  p {
+    line-height: 1em;
+  }
+}
+
+.hover {
+  opacity: 0;
+
+  transition: opacity .3s ease-in-out;
+}
+
+.hover:hover {
+  opacity: 1;
+}
+
+.overflow {
+  overflow: hidden;
+}
+
+.pagination {
+  cursor: default;
+  margin: 0 auto 3rem;
+  text-align: center;
+  user-select: none;
+
+  i.fa {
+    font-size: 1.5rem;
+  }
+
+  .link-previous, .link-next {
+    cursor: pointer;
+    padding: 2rem;
+
+    transition: 0.3s ease-in-out;
+  }
+
+  .link-previous.disabled, .link-next.disabled {
+    cursor: default;
+    opacity: 0.2;
+  }
+
+  .page-number {
+    display: inline-block;
+    font-size: 0.8rem;
+    margin: 2rem 1rem;
+  }
+}
+
+.circle {
+  border: none;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+button.circle {
+  background: $white;
+  padding: 0.5rem;
+}
+
+.scrollable {
+  height: 50%;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+  }
+}

@@ -1,0 +1,56 @@
+// Full-page header
+header {
+  height: 100vh;
+  position: relative;
+
+  h1 {
+    margin-bottom: calc(0.1em + 1.5rem);
+    padding-top: 46.5vh;
+  }
+
+  button.scroll-down {
+    background: rgba(255,2555,255,0.09);
+    bottom: 1rem;
+    color: $white;
+    cursor: pointer;
+    height: 2.5rem;
+    left: 50%;
+    outline: none;
+    position: absolute;
+    text-align: center;
+    transform: translateX(-50%);
+    width: 2.5rem;
+
+    i.fa {
+      font-size: 1.2rem;
+    }
+  }
+}
+
+
+main {
+  background: url('../img/background.png') $background-color;
+
+  .container {
+    padding-top: 13vh;
+  }
+}
+
+@media screen and (max-height: $medium) {
+  header {
+
+    .container {
+      display: table;
+      height: 100%;
+
+      .col {
+        display: table-cell;
+        vertical-align: middle;
+      }
+
+      h1 {
+        padding-top: 0;
+      }
+    }
+  }
+}

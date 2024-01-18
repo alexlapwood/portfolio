@@ -1,0 +1,105 @@
+// Resets
+$background-color: #131f28;
+$background-color2: #0f171d;
+$white: #FFF;
+
+$small-height: 600px;
+$small: 680px;
+$medium: 800px;
+$large: 960px;
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  vertical-align: top;
+}
+
+html {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+body {
+  background: $background-color;
+  color: $white;
+  font-family: 'Raleway', sans-serif;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+h1 {
+  font-size: 5.75rem;
+  font-weight: 800;
+    line-height: 0.986em;
+}
+
+h2 {
+  font-size: 1.625rem;
+  line-height: 1em;
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+a {
+  color: inherit;
+  cursor: pointer;
+  line-height: 1.5em;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+main {
+  display: block;
+}
+
+@media screen and (max-width: 500px), screen and (max-height: 400px) {
+  h1 {
+    font-size: 3rem;
+  }
+}
+
+@media screen and (max-width: 999px) {
+  html {
+    font-size: 12px;
+  }
+}
+
+@media screen and (max-width: #{$medium - 1}) {
+  .align-right h2 {
+    margin-bottom: 1rem;
+  }
+}
+
+@media screen and (min-width: 1000px) and (max-width: 1333px) {
+  html {
+    font-size: 1.2vw;
+  }
+}
+
+@import 'parallax';
+
+@import 'navigation';
+
+@import 'header';
+
+@import 'portfolio';
+
+@import 'projects';
+
+@import 'testimonials';
+
+@import 'footer';
+
+@import 'components';
+
+@import 'helpers';
+
+@import 'hamburger';
+
+@import 'grid';

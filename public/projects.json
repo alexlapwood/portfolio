@@ -1,0 +1,131 @@
+{
+  "projects": [
+    {
+      "id": "spotify_playlist",
+      "title": "Spotify Playlist Generator",
+      "subtitle": "Progressive Web Application",
+      "description": "<p>Spotify Playlist Generator for Android, iOS, macOS, and web.</p><p>Use the artists on any Spotify playlist as a template for generating a new playlist. Spotify Playlist Generator gives you an easy UI to interact with the Spotify API.</p>",
+      "url": "https://spotifyplaylist.app",
+      "display_url": "spotifyplaylist.app",
+      "date": "2020/04/11",
+      "desktopOnly": true,
+      "screenshots": ["Page 1", "Page 2", "Page 3"]
+    },
+    {
+      "id": "wumpa_time",
+      "title": "Wumpa Time",
+      "subtitle": "Progressive Web Application",
+      "description": "<p>Wumpa Time for Android, iOS, macOS, and web.</p><p>Wumpa Time is a time tracker for the game Crash Team Racing Nitro-Fueled. It allows users to track your Wumpa-Time and see how much time they have left to get the maximum amount of Wumpa Coins.</p>",
+      "url": "https://wumpa.app",
+      "display_url": "wumpa.app",
+      "date": "2019/11/03",
+      "desktopOnly": true,
+      "screenshots": ["Page 1", "Page 2"]
+    },
+    {
+      "id": "stardew_planner",
+      "title": "Stardew Valley Seasonal Planner",
+      "subtitle": "Progressive Web Application",
+      "description": "<p>Stardew Valley Seasonal Planner is a tool for planning a farm layout in the game Stardew Valley. It helps users understand how their crops will grow over time and how to best place their sprinklers and scarecrows.</p>",
+      "url": "https://stardewplanner.app",
+      "display_url": "stardewplanner.app",
+      "date": "WIP",
+      "desktopOnly": true,
+      "screenshots": ["Stardew Valley Seasonal Planner"]
+    },
+    {
+      "id": "build_it",
+      "title": "Build-It",
+      "subtitle": "Web Application",
+      "description": "Build-It is a web application I created to help teams discuss project documents. By following Google’s Material Design guidelines, Build-It provides users with a clean interface and an intuitive experience. The application is also fully responsive and significantly optimised for mobile support.",
+      "url": "https://host-it.co.nz/~buildit",
+      "display_url": "build-it.co.nz",
+      "date": "2016/06/03",
+      "screenshots": [
+        "Login Page",
+        "Projects Page",
+        "Project Page",
+        "Project Settings Page"
+      ]
+    },
+    {
+      "id": "victoria_motorcycle_club",
+      "title": "Victoria Motorcycle Club",
+      "subtitle": "Community Site/WordPress",
+      "description": "One of the key features of Victoria Motorcycle Club's website is its membership integration, providing club members with a private forum and a simple way to manage their membership. The website also features MyLaps integration, giving club members quick access to the results of recent races.",
+      "url": "http://vicclub.co.nz",
+      "display_url": "vicclub.co.nz",
+      "date": "2016/03/18",
+      "screenshots": [
+        "Home Page",
+        "News Page",
+        "Events Page",
+        "MyLaps Page",
+        "Forums Page",
+        "Forum Page",
+        "Topic Page",
+        "Membership Page",
+        "Contact Us Page"
+      ]
+    },
+    {
+      "id": "dirty_south",
+      "title": "Dirty South",
+      "subtitle": "Clothing Brand/WordPress",
+      "description": "Dirty South's online store is designed to promote their unique kiwi branding and help reach customers across the globe. The website features responsive design, making it mobile friendly and easily accessible for customers.",
+      "url": "https://dirtysouth.co.nz",
+      "display_url": "dirtysouth.co.nz",
+      "date": "2015/03/02",
+      "screenshots": [
+        "Home Page",
+        "Product Category Page",
+        "Product Page",
+        "Cart Page",
+        "Checkout Page"
+      ]
+    },
+    {
+      "id": "multibuild_schwass",
+      "title": "Multibuild Schwass",
+      "subtitle": "Construction Portfolio/WordPress",
+      "description": "The highlight of creating Multibuild Schwass' online portfolio was developing the file manager plugin for WordPress. The plugin was designed to help staff upload tenders to the website and manage them using a modern interface. The file manager developed for this project later became the inspiration for <a id=\"build_it\" class=\"link-project\">&lt;Build-It&gt;</a>.",
+      "url": "http://multibuildschwass.co.nz",
+      "display_url": "multibuildschwass.co.nz",
+      "date": "2014/10/10",
+      "screenshots": [
+        "Home Page",
+        "Portfolio Page",
+        "Project Page",
+        "Tenders Page",
+        "Contact Us Page",
+        "File Manager"
+      ]
+    },
+    {
+      "id": "waikanae_boating_club",
+      "title": "Waikanae Boating Club",
+      "subtitle": "Community Site/WordPress",
+      "description": "Waikanae Boating Club's website is a central hub for club details, events, photos, and important information. The website is also integrated with MetService, providing members with live weather updates for their local club.",
+      "url": "http://waikanaeboatingclub.org.nz/home-2",
+      "display_url": "waikanaeboatingclub.org.nz",
+      "date": "2014/07/31",
+      "screenshots": ["Home Page", "About Us Page", "Contact Us Page"]
+    },
+    {
+      "id": "i_tools",
+      "title": "I-Tools",
+      "subtitle": "Hardware Store/Shopify",
+      "description": "While I was working at I-Tools, a team was contracted to upgrade their existing ecommerce system to utilise Tradevine, Shopify, and Xero. The new system was a failure, so I was asked to set aside my regular duties and rescue the website. I relished this opportunity and the project was a success.",
+      "url": "http://i-tools.co.nz",
+      "display_url": "i-tools.co.nz",
+      "date": "2014/04/14",
+      "screenshots": [
+        "Home Page",
+        "Products Page",
+        "Product Page",
+        "Feedback Page",
+        "Contact Us Page"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+// Portfolio Section
+$horizontal-spacing: 2rem;
+$vertical-spacing: 2.75rem;
+
+.portfolio {
+  height: calc(71vh + #{$vertical-spacing});
+
+  .col {
+    display: none;
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: $vertical-spacing;
+    height: 25%;
+
+    .preview {
+      background: $background-color2;
+      background-position: center top;
+      background-size: cover;
+      height: 100%;
+    }
+
+    .hover {
+      background-blend-mode: multiply;
+      background-position: center top;
+      background-size: cover;
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+
+      h2 {
+        line-height: 1.2em;
+      }
+
+      span {
+        bottom: 1rem;
+        font-weight: 600;
+        position: absolute;
+        right: 1rem;
+      }
+    }
+  }
+}
+
+@media screen and (min-width: $small) and (min-height: $small-height) {
+  .portfolio {
+    .col {
+      display: inline-block;
+    }
+  }
+}
+
+@media screen and (min-width: $small) and (max-width: #{$large - 1}) {
+  .portfolio {
+    .col {
+      padding-left: $horizontal-spacing / 2;
+      padding-right: $horizontal-spacing / 2;
+    }
+
+    .col:nth-child(2n + 0) {
+      padding-left: $horizontal-spacing / 2;
+      padding-right: 0;
+    }
+    .col:nth-child(2n - 1) {
+      padding-left: 0;
+      padding-right: $horizontal-spacing / 2;
+    }
+    .col:last-child {
+      display: none;
+    }
+  }
+}
+
+@media screen and (min-width: $large) {
+  .portfolio {
+    .col {
+      height: 33%;
+      padding-left: $horizontal-spacing / 3;
+      padding-right: $horizontal-spacing / 3;
+    }
+
+    .col:nth-child(3n + 0) {
+      padding-left: $horizontal-spacing / 3 * 2;
+      padding-right: 0;
+    }
+    .col:nth-child(3n - 2) {
+      padding-left: 0;
+      padding-right: $horizontal-spacing / 3 * 2;
+    }
+  }
+}

@@ -1,0 +1,70 @@
+// Grid system
+.container {
+  margin: auto;
+  width: 66vw;
+  max-width: 1280px;
+}
+
+.row {
+  font-size: 0;
+}
+
+.col {
+  display: inline-block;
+  font-size: 1rem;
+}
+
+$num-cols: 12;
+$i: 1;
+@while $i <= $num-cols {
+  $perc: unquote((100 / ($num-cols / $i)) + "%");
+  .xs#{$i} {
+    width: $perc;
+  }
+  .offset-xs#{$i} {
+    margin-left: $perc;
+  }
+  $i: $i + 1;
+}
+
+@media screen and (min-width: $small) {
+  $i: 1;
+  @while $i <= $num-cols {
+    $perc: unquote((100 / ($num-cols / $i)) + "%");
+    .s#{$i} {
+      width: $perc;
+    }
+    .offset-s#{$i} {
+      margin-left: $perc;
+    }
+    $i: $i + 1;
+  }
+}
+
+@media screen and (min-width: $medium) {
+  $i: 1;
+  @while $i <= $num-cols {
+    $perc: unquote((100 / ($num-cols / $i)) + "%");
+    .m#{$i} {
+      width: $perc;
+    }
+    .offset-m#{$i} {
+      margin-left: $perc;
+    }
+    $i: $i + 1;
+  }
+}
+
+@media screen and (min-width: $large) {
+  $i: 1;
+  @while $i <= $num-cols {
+    $perc: unquote((100 / ($num-cols / $i)) + "%");
+    .l#{$i} {
+      width: $perc;
+    }
+    .offset-l#{$i} {
+      margin-left: $perc;
+    }
+    $i: $i + 1;
+  }
+}

@@ -1,0 +1,72 @@
+// Testimonials section
+.testimonials {
+  border-bottom: 1px solid $white;
+  position: relative;
+
+  .testimonial {
+    height: auto;
+  	opacity: 0;
+    overflow: hidden;
+    padding-bottom: 9rem;
+    pointer-events: none;
+  	position: absolute;
+  	top: 0;
+  	transform: translateX(-30%);
+
+  	transition: all 0.3s ease-in-out;
+
+    a {
+      display: block;
+      margin-top: 1rem;
+    }
+
+    .profile {
+      bottom: 0;
+      margin: 2.5rem 0;
+      position: absolute;
+      width: 100%;
+
+      .circle {
+        display: inline-block;
+        height: 4rem;
+        margin-right: 1rem;
+        vertical-align: middle;
+        width: 4rem;
+
+        img {
+          max-width: 100%;
+          max-height: 100%;
+        }
+      }
+
+      .details {
+        display: inline-block;
+        vertical-align: middle;
+
+        .name {
+          display: block;
+          font-size: 1.16rem;
+        }
+
+        .position {
+          display: block;
+          font-size: 0.8rem;
+          text-transform: uppercase;
+        }
+      }
+    }
+  }
+
+  .testimonial.active {
+    display: block;
+  	opacity: 1;
+    pointer-events: auto;
+  	position: relative;
+  	transform: translateX(0px);
+  	z-index: 0;
+  }
+
+  .testimonial.active ~ .testimonial {
+      transform: translateX(30%);
+  }
+}
