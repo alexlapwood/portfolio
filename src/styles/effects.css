@@ -1,0 +1,78 @@
+/* ── Shared effects layer ────────────────────────────────────────────────────
+   The bespoke, reused interaction styles live here once as semantic classes,
+   shared because every link (and later, card) reuses them. Tokens, @property,
+   fonts and the reset stay in app.css; per-frame cursor work stays in the
+   components' rAF wiring. Ported from prototype/index.html.
+
+   Link interaction primitives:
+     - .l-bracket : angle-bracket reveal (BracketLink)
+     - .l-fill    : magnet rainbow text-fill (FillLink)
+     - .l-line    : expanding underline + magnet fill (LineLink)
+*/
+
+/* Magnet rainbow text-fill — white until hover, then the rainbow shows through
+   the glyphs. The gradient itself is driven per-frame by the component's rAF
+   wiring (useMagnetFill → magnetGradient), which overrides background-image;
+   --rainbow is just the static fallback before the first write. Shared by
+   FillLink and LineLink. */
+.l-fill,
+.l-line {
+  background-image: var(--rainbow);
+  background-size: 100% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: var(--fg);
+  transition: -webkit-text-fill-color 0.2s ease;
+}
+.l-fill:hover,
+.l-line:hover {
+  -webkit-text-fill-color: transparent;
+}
+
+/* Angle-bracket reveal — both brackets slide in + fade up on hover; cyan. */
+.l-bracket::before,
+.l-bracket::after {
+  display: inline-block;
+  opacity: 0;
+  color: #00b8ff;
+  transition: 0.25s ease;
+}
+.l-bracket::before {
+  content: "<";
+  margin-right: 0.12em;
+  transform: translateX(0.4em);
+}
+.l-bracket::after {
+  content: ">";
+  margin-left: 0.12em;
+  transform: translateX(-0.4em);
+}
+.l-bracket:hover::before,
+.l-bracket:hover::after {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Expanding underline — grows middle-out on hover, its gradient kept in sync
+   with the text fill via --ul-grad (set alongside background-image by the rAF
+   wiring); --ox keeps the prototype's cursor-origin hook with a centred
+   default. */
+.l-line {
+  position: relative;
+  padding-bottom: 6px;
+}
+.l-line::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  background: var(--ul-grad, var(--rainbow));
+  transform: scaleX(0);
+  transform-origin: var(--ox, 50%) center;
+  transition: transform 0.22s ease;
+}
+.l-line:hover::after {
+  transform: scaleX(1);
+}

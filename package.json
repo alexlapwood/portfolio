@@ -1,18 +1,38 @@
 {
   "name": "portfolio",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "start": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
-  },
-  "devDependencies": {
-    "sass": "^1.69.7",
-    "typescript": "^5.2.2",
-    "vite": "^5.0.8"
+    "start": "vinxi dev --port 4000",
+    "dev": "vinxi dev --port 4000",
+    "build": "vinxi build",
+    "serve": "vinxi start",
+    "version": "vinxi version",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
-    "firebase": "^10.7.1"
+    "@solidjs/router": "^0.15.3",
+    "@solidjs/start": "^1.1.0",
+    "solid-js": "^1.9.5",
+    "solid-mdx": "^0.0.7",
+    "vinxi": "^0.5.3"
+  },
+  "devDependencies": {
+    "@mdx-js/rollup": "^3.1.0",
+    "@solidjs/testing-library": "^0.8.10",
+    "@tailwindcss/vite": "^4.0.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "jsdom": "^29.1.1",
+    "remark-frontmatter": "^5.0.0",
+    "remark-mdx-frontmatter": "^5.0.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.3",
+    "vite-plugin-solid": "^2.11.12",
+    "vitest": "^4.1.9"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

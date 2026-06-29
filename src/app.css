@@ -1,0 +1,66 @@
+@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&display=swap");
+@import "tailwindcss";
+@import "./styles/effects.css";
+
+/* ── Global tokens ──────────────────────────────────────────────────────────
+   What is global by nature: the animated --spin angle, the rainbow palette,
+   the base colours, fonts, and reset. Bespoke reusable effects live in the
+   shared effects layer (./styles/effects.css). */
+
+/* Animated angle that drives the conic card border ring (effects layer). */
+@property --spin {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+:root {
+  /* The rainbow — the site's single accent. Red is pinned at both ends. */
+  --rainbow: linear-gradient(
+    90deg,
+    #ff004d,
+    #ff6a00,
+    #ffd500,
+    #00e08a,
+    #00b8ff,
+    #7a5cff,
+    #ff00c8,
+    #ff004d
+  );
+  /* Spinning conic of the same palette — card border ring + glow. */
+  --conic: conic-gradient(
+    from var(--spin, 0deg) at var(--cx, 50%) var(--cy, 50%),
+    #ff004d,
+    #ff6a00,
+    #ffd500,
+    #00e08a,
+    #00b8ff,
+    #7a5cff,
+    #ff00c8,
+    #ff004d
+  );
+  --bg: #000;
+  --fg: #fff;
+  --dim: #5a5a5a;
+  --line: #1c1c1c;
+  --spin-dur: 1.3s;
+}
+
+/* ── Reset ──────────────────────────────────────────────────────────────── */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: "Raleway", system-ui, sans-serif;
+  line-height: 1.5;
+  overflow-x: hidden;
+}

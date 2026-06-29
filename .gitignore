@@ -1,11 +1,16 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-
 node_modules
 dist
-dist-ssr
+.output
+.vinxi
+.vercel
+.netlify
+
+# env / local
+.env
+.env.*
+!.env.example
 *.local
 
+# os / editor
 .DS_Store
+Thumbs.db
