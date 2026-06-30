@@ -135,7 +135,7 @@
    only sizes/weights the label. */
 .st .home-link {
   font-weight: 800;
-  font-size: 1.44rem;
+  font-size: 0.95rem;
   letter-spacing: -0.02em;
   white-space: nowrap;
 }
@@ -143,7 +143,7 @@
   margin-left: auto;
   display: flex;
   gap: 1.6rem;
-  font-size: 1.24rem;
+  font-size: 0.82rem;
 }
 
 /* ─────────────── Grouped rainbow (nav + footer-right) ───────────────
@@ -199,11 +199,11 @@
   gap: 1ch;
   padding: 2.6rem 0 1.4rem;
   border-bottom: 1px solid var(--line2);
-  font-size: 1.21rem;
+  font-size: 0.8rem;
   letter-spacing: 0.04em;
 }
 .st .sec-head h2 {
-  font-size: 1.29rem;
+  font-size: 0.85rem;
   font-weight: 700;
   text-transform: lowercase;
   letter-spacing: 0.04em;
@@ -263,7 +263,7 @@
 }
 .st .row-head {
   padding: 0.85rem 0.6rem;
-  font-size: 1rem;
+  font-size: 0.66rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   border-bottom: 1px solid var(--line);
@@ -389,19 +389,19 @@
   border-color: rgba(0, 0, 0, 0.5);
 }
 .st .title {
-  font-size: 1.55rem;
+  font-size: 1.02rem;
   font-weight: 700;
   letter-spacing: -0.01em;
   white-space: nowrap;
 }
 .st .summary {
-  font-size: 1.24rem;
+  font-size: 0.82rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .st .arrow {
-  font-size: 1.44rem;
+  font-size: 0.95rem;
   text-align: right;
   transition: transform 0.16s ease;
 }
@@ -472,7 +472,7 @@
      traffic-light dots line up with the form labels below. */
   padding: 0.7rem 1.4rem;
   border-bottom: 1px solid var(--line2);
-  font-size: 1.09rem;
+  font-size: 0.72rem;
 }
 .st .term-bar .tdot {
   width: 9px;
@@ -499,7 +499,7 @@
 }
 .st .field label {
   display: block;
-  font-size: 1.12rem;
+  font-size: 0.74rem;
   margin-bottom: 0.45rem;
   letter-spacing: 0.02em;
 }
@@ -516,7 +516,7 @@
   background: #060606;
   border: 1px solid var(--line2);
   font: inherit;
-  font-size: 1.36rem;
+  font-size: 0.9rem;
   padding: 0.7rem 0.85rem;
   caret-color: var(--accent);
   resize: vertical;
@@ -598,7 +598,7 @@
   position: relative;
   isolation: isolate;
   font: inherit;
-  font-size: 1.3rem;
+  font-size: 0.86rem;
   font-weight: 700;
   letter-spacing: 0.02em;
   border: 1px solid var(--line2);
@@ -661,7 +661,7 @@
   }
 }
 .st .form-status {
-  font-size: 1.18rem;
+  font-size: 0.78rem;
   min-height: 1.2em;
   white-space: pre-wrap;
 }
@@ -691,7 +691,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 0.6rem 1.6rem;
-  font-size: 1.18rem;
+  font-size: 0.78rem;
 }
 .st footer .links {
   display: flex;
