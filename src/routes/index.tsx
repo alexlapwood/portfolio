@@ -237,7 +237,17 @@ export default function Home() {
       // overscroll-y-none stops scroll-chaining; scroll-smooth drives the nav hash
       // jumps + the wordmark scroll-to-top. (The fixed bar/footer/rails stay pinned
       // to the viewport — overflow doesn't contain fixed positioning.)
-      class="st relative h-dvh overflow-x-hidden overflow-y-auto overscroll-y-none scroll-smooth bg-black leading-normal text-white selection:bg-white selection:text-black"
+      //
+      // `isolate` makes .st a stacking context so the z-40 fixed bars become its
+      // stacking descendants (stacking membership follows DOM ancestry, not the
+      // containing block) instead of escaping to the root context. A scroll
+      // container paints its scrollbar above its whole subtree, so the indicator
+      // now lands ON TOP of the blurred bars — on iOS, where overlay scrollbars
+      // can't be insetted with --sbw, they were painting behind the chrome.
+      // isolation never establishes a containing block for position:fixed (only
+      // transform/filter/will-change do), so the bars stay viewport-pinned: no
+      // scroll-jank, the document stays locked.
+      class="st relative isolate h-dvh overflow-x-hidden overflow-y-auto overscroll-y-none scroll-smooth bg-black leading-normal text-white selection:bg-white selection:text-black"
     >
       <div class="rails" aria-hidden="true" />
 
