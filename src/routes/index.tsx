@@ -76,13 +76,31 @@ const WORK: Project[] = [
 
 type FormStatus = { kind: "info" | "ok" | "err"; text: string };
 
+// Shared Tailwind clusters, declared once so every reuse stays in sync.
+// `col` is the page's content column (the single --gutter inset, capped at
+// --col); `screen` is a full-viewport section that reserves the fixed bar (top)
+// and footer (bottom) as padding and flex-centres its content between them.
+const col = "w-full max-w-[var(--col)] mx-auto px-[var(--gutter)]";
+const screen =
+  "min-h-dvh flex flex-col justify-center pt-[var(--bar-h)] pb-[var(--footer-h)]";
+// Shared field styling for the contact inputs + textarea: dead-black surface, a
+// hairline resting border, and the white inset-glow focus treatment.
+const field =
+  "block w-full bg-[#060606] border border-[var(--line2)] text-[0.9rem] px-[0.85rem] py-[0.7rem] text-white caret-white focus:outline-none focus:border-[var(--accent)] focus:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.35)]";
+const fieldLabel =
+  "block text-[0.74rem] mb-[0.45rem] tracking-[0.02em] text-neutral-300";
+// The Work table's grid template (thumb · name · summary · arrow) — shared by the
+// header legend and every row so the columns line up down the table. Below 820px
+// it collapses to a two-line card (thumb · title/summary · arrow) via grid areas.
+const rowGrid =
+  "grid grid-cols-[42px_15rem_minmax(0,1fr)_2.1rem] items-center gap-[1.1rem] px-[0.6rem] py-[0.85rem]";
+
 // Home (/) — the single scrolling page: command bar + WebGL paint-reveal hero +
 // Work table + terminal contact form + footer, with hash-anchor nav between the
-// sections. This route owns ALL of its chrome (Shell.tsx is a pass-through), so
-// the bar / hero / work / contact / footer render bare. The whole page is
-// wrapped in a single `.st` root so the co-located stylesheet stays scoped to
-// it; plain text colours are Tailwind utilities on the elements (text-white by
-// default here), the bespoke chrome is in styles/shader-terminal.css.
+// sections. This route owns ALL of its chrome (Shell.tsx is a pass-through). The
+// whole page is wrapped in a single `.st` root so the co-located stylesheet stays
+// scoped to it; all layout/spacing/typography is Tailwind on the elements, and
+// only the bespoke chrome Tailwind can't express lives in styles/shader-terminal.css.
 export default function Home() {
   let rootRef!: HTMLDivElement;
   let homeRef!: HTMLAnchorElement;
@@ -99,6 +117,17 @@ export default function Home() {
     useMagnetFill(homeRef);
 
     const root = rootRef;
+    // The page scrolls inside .st (not the document — see app.css), so on
+    // classic scrollbars (Windows) the scrollbar lives inside .st while the fixed
+    // bars are viewport-relative (right:0) and would overlap it. Measure the
+    // scrollbar width into --sbw and inset the bars by it (0 on overlay-scrollbar
+    // platforms, so it's a no-op there). Also keeps the bar content aligned with
+    // the scrolling content, both centred in the scrollbar-excluded width.
+    const setScrollbarWidth = () =>
+      root.style.setProperty("--sbw", `${root.offsetWidth - root.clientWidth}px`);
+    setScrollbarWidth();
+    window.addEventListener("resize", setScrollbarWidth);
+    onCleanup(() => window.removeEventListener("resize", setScrollbarWidth));
     // Grouped rainbow: the nav and the footer-right list each share ONE
     // continuous rainbow, but only the link under the cursor lights at a time —
     // every member still painting its own contiguous slice of the shared static
@@ -200,29 +229,44 @@ export default function Home() {
   }
 
   return (
-    <div ref={rootRef} class="st text-white">
+    <div
+      ref={rootRef}
+      // The page root is the scroll container (not the document): the document is
+      // locked in app.css so mobile browser chrome can't collapse on scroll. h-dvh
+      // caps it to the viewport; overflow-y:auto scrolls the sections inside;
+      // overscroll-y-none stops scroll-chaining; scroll-smooth drives the nav hash
+      // jumps + the wordmark scroll-to-top. (The fixed bar/footer/rails stay pinned
+      // to the viewport — overflow doesn't contain fixed positioning.)
+      class="st relative h-dvh overflow-x-hidden overflow-y-auto overscroll-y-none scroll-smooth bg-black leading-normal text-white selection:bg-white selection:text-black"
+    >
       <div class="rails" aria-hidden="true" />
 
       {/* ───────────── Command bar ───────────── */}
-      <header class="bar">
-        <div class="col">
+      <header class="fixed top-0 left-0 right-[var(--sbw,0px)] z-40 flex h-[var(--bar-h)] items-center border-b border-[var(--line2)] bg-black/72 backdrop-blur-[10px]">
+        <div class={`${col} flex items-center gap-[1.4rem]`}>
           {/* Home wordmark. A plain <a class="l-fill"> rather than a <FillLink>
               (which doesn't forward onClick): since this page IS "/", clicking
               it should smooth-scroll to the top, not trigger a full reload. The
-              l-fill class + useMagnetFill (wired in onMount) reproduce FillLink's
+              l-fill class + useMagnetFill (wired in onMount) reproduce the
               cursor-tracked rainbow text-fill. href="/" is kept for semantics. */}
           <a
             ref={homeRef}
             href="/"
-            class="l-fill home-link"
+            class="l-fill text-[0.95rem] font-extrabold tracking-[-0.02em] whitespace-nowrap"
             onClick={(e) => {
               e.preventDefault();
-              window.scrollTo({ top: 0, behavior: "smooth" });
+              // Scroll the .st root (the scroll container), not the window —
+              // the document itself no longer scrolls (see app.css).
+              rootRef.scrollTo({ top: 0, behavior: "smooth" });
             }}
           >
             Alex Lapwood
           </a>
-          <nav aria-label="Sections" data-rainbow-group>
+          <nav
+            aria-label="Sections"
+            data-rainbow-group
+            class="ml-auto flex gap-[1.6rem] text-[0.82rem]"
+          >
             <a class="l-line" href="#projects" data-rainbow-item>
               projects
             </a>
@@ -233,41 +277,56 @@ export default function Home() {
         </div>
       </header>
 
-      <main>
+      <main class="relative z-[1]">
         {/* Hero — the real WebGL paint-reveal name. <NameHero> renders its own
-            <section> + <h1>, so this is just a layout wrapper (no extra section). */}
-        {/* glowOpacity bumps the name's rainbow bloom a touch brighter than the
-            default 0.12 — the whole visible site lives under .st, so this is the
-            site-wide glow. */}
-        <div class="hero">
+            <section> + <h1>, so this is just a full-screen layout wrapper that
+            flex-centres it between the fixed bar + footer. glowOpacity bumps the
+            rainbow bloom a touch brighter than the default 0.12. */}
+        <div class={screen}>
           <NameHero glowOpacity={0.14} />
         </div>
 
         {/* ───────────── Work ───────────── */}
-        <section id="projects" class="work" aria-labelledby="projects-title">
-          <div class="col">
-            <header class="sec-head">
-              <span class="hash text-neutral-500" aria-hidden="true">
+        <section
+          id="projects"
+          class={`${screen} scroll-mt-[var(--bar-h)]`}
+          aria-labelledby="projects-title"
+        >
+          <div class={col}>
+            <header class="flex items-baseline gap-[1ch] border-b border-[var(--line2)] pt-[2.6rem] pb-[1.4rem] text-[0.8rem] tracking-[0.04em]">
+              <span class="text-neutral-500" aria-hidden="true">
                 //
               </span>
-              <h2 id="projects-title">projects</h2>
+              <h2
+                id="projects-title"
+                class="text-[0.85rem] font-bold lowercase tracking-[0.04em]"
+              >
+                projects
+              </h2>
             </header>
 
             {/* decorative column legend — the rows below carry their own visible
-                labels, so it's hidden from assistive tech */}
-            <div class="row-head text-neutral-500" aria-hidden="true">
+                labels, so it's hidden from assistive tech (and from the mobile
+                card layout) */}
+            <div
+              class={`${rowGrid} border-b border-[var(--line)] text-[0.66rem] tracking-[0.18em] text-neutral-500 uppercase max-[820px]:hidden`}
+              aria-hidden="true"
+            >
               <span />
               <span>project</span>
               <span>summary</span>
               <span />
             </div>
 
-            <ul class="rows">
+            {/* divide-y draws the line between rows (--line); the ul's own
+                border-b closes the table (--line2) — no per-row border needed,
+                so the last row isn't doubled. */}
+            <ul class="list-none divide-y divide-[var(--line)] border-b border-[var(--line2)]">
               <For each={WORK}>
                 {(p) => (
                   <li>
                     <a
-                      class="row"
+                      class={`row group relative isolate ${rowGrid} max-[820px]:grid-cols-[52px_minmax(0,1fr)_1.4rem] max-[820px]:gap-x-[0.9rem] max-[820px]:gap-y-[0.15rem] max-[820px]:[grid-template-areas:'thumb_title_arrow'_'thumb_summ_arrow']`}
                       href={p.href}
                       target="_blank"
                       rel="noopener"
@@ -276,16 +335,23 @@ export default function Home() {
                           (position:absolute, so it's out of the row's grid) */}
                       <span class="flow-ring" aria-hidden="true" />
                       <img
-                        class={`thumb${p.pixelated ? " thumb--pixel" : ""}`}
+                        class={`h-[42px] w-[42px] border border-[var(--line2)] object-contain transition-[border-color] duration-200 group-hover:border-[rgba(0,0,0,0.5)] max-[820px]:h-[52px] max-[820px]:w-[52px] max-[820px]:self-center max-[820px]:[grid-area:thumb]${p.pixelated ? " [image-rendering:pixelated]" : ""}`}
                         src={p.thumb}
                         alt={p.alt}
                         width={42}
                         height={42}
                         loading="lazy"
                       />
-                      <span class="title">{p.title}</span>
-                      <span class="summary text-neutral-300">{p.summary}</span>
-                      <span class="arrow text-neutral-500" aria-hidden="true">
+                      <span class="text-[1.02rem] font-bold tracking-[-0.01em] whitespace-nowrap max-[820px]:whitespace-normal max-[820px]:[grid-area:title]">
+                        {p.title}
+                      </span>
+                      <span class="overflow-hidden text-[0.82rem] text-ellipsis whitespace-nowrap text-neutral-300 max-[820px]:whitespace-normal max-[820px]:[grid-area:summ]">
+                        {p.summary}
+                      </span>
+                      <span
+                        class="text-right text-[0.95rem] text-neutral-500 transition-transform duration-150 group-hover:[transform:translate(2px,-2px)] max-[820px]:self-start max-[820px]:[grid-area:arrow]"
+                        aria-hidden="true"
+                      >
                         ↗
                       </span>
                       <span class="sr-only"> (opens in a new tab)</span>
@@ -298,8 +364,12 @@ export default function Home() {
         </section>
 
         {/* ───────────── Contact ───────────── */}
-        <section id="contact" class="contact" aria-labelledby="contact-title">
-          <div class="col">
+        <section
+          id="contact"
+          class={`${screen} scroll-mt-[var(--bar-h)]`}
+          aria-labelledby="contact-title"
+        >
+          <div class={col}>
             {/* The visible "// contact" header was removed — the command bar's
                 //contact indicator now names this screen. A visually-hidden
                 heading is kept so the section's accessible name
@@ -308,26 +378,42 @@ export default function Home() {
               contact
             </h2>
 
-            {/* prop:noValidate sets the DOM property directly — native
-                validation stays off so our JS validation owns the messaging. */}
-            <form class="term" onSubmit={handleSubmit} prop:noValidate={true}>
-              {/* terminal-window titlebar: traffic-light dots on the left, then a
-                  left-aligned //contact window caption just after them (normal
-                  flow). Purely decorative chrome (aria-hidden) — the section's
-                  accessible name comes from the sr-only <h2 id="contact-title">
-                  above. */}
-              <div class="term-bar">
-                <span class="tdot" aria-hidden="true" />
-                <span class="tdot" aria-hidden="true" />
-                <span class="tdot" aria-hidden="true" />
-                <span class="term-title text-neutral-500" aria-hidden="true">
+            {/* faux-terminal window, centred in the column. prop:noValidate sets
+                the DOM property directly — native validation stays off so our JS
+                validation owns the messaging. */}
+            <form
+              class="mx-auto w-full max-w-[640px] border border-[var(--line2)] bg-white/[0.012]"
+              onSubmit={handleSubmit}
+              prop:noValidate={true}
+            >
+              {/* terminal-window titlebar: traffic-light dots then a left-aligned
+                  //contact caption. Purely decorative (aria-hidden) — the
+                  section's accessible name is the sr-only <h2> above. The middle
+                  dot is a touch lighter (#2a2a2a) than the outer two (--line2). */}
+              <div class="flex items-center gap-[0.6ch] border-b border-[var(--line2)] px-[1.4rem] py-[0.7rem] text-[0.72rem]">
+                <span
+                  class="h-[9px] w-[9px] rounded-full bg-[#262626]"
+                  aria-hidden="true"
+                />
+                <span
+                  class="h-[9px] w-[9px] rounded-full bg-[#2a2a2a]"
+                  aria-hidden="true"
+                />
+                <span
+                  class="h-[9px] w-[9px] rounded-full bg-[#262626]"
+                  aria-hidden="true"
+                />
+                <span
+                  class="ml-[0.6ch] tracking-[0.06em] text-neutral-500"
+                  aria-hidden="true"
+                >
                   //contact
                 </span>
               </div>
-              <div class="term-body">
-                <div class="field">
-                  <label class="text-neutral-300" for="f-name">
-                    <span class="pr text-white" aria-hidden="true">
+              <div class="flex flex-col gap-[1.2rem] p-[1.4rem]">
+                <div>
+                  <label class={fieldLabel} for="f-name">
+                    <span class="mr-[0.4ch] text-white" aria-hidden="true">
                       {">"}
                     </span>
                     name
@@ -336,13 +422,13 @@ export default function Home() {
                     id="f-name"
                     name="name"
                     type="text"
-                    class="text-white"
+                    class={field}
                     autocomplete="name"
                   />
                 </div>
-                <div class="field">
-                  <label class="text-neutral-300" for="f-email">
-                    <span class="pr text-white" aria-hidden="true">
+                <div>
+                  <label class={fieldLabel} for="f-email">
+                    <span class="mr-[0.4ch] text-white" aria-hidden="true">
                       {">"}
                     </span>
                     email
@@ -351,22 +437,29 @@ export default function Home() {
                     id="f-email"
                     name="email"
                     type="email"
-                    class="text-white"
+                    class={field}
                     autocomplete="email"
                   />
                 </div>
-                <div class="field">
-                  <label class="text-neutral-300" for="f-msg">
-                    <span class="pr text-white" aria-hidden="true">
+                <div>
+                  <label class={fieldLabel} for="f-msg">
+                    <span class="mr-[0.4ch] text-white" aria-hidden="true">
                       {">"}
                     </span>
                     message
                   </label>
-                  <textarea id="f-msg" name="message" class="text-white" />
+                  <textarea
+                    id="f-msg"
+                    name="message"
+                    class={`${field} min-h-[116px] resize-y leading-[1.55]`}
+                  />
                 </div>
                 {/* honeypot — visually hidden + hidden from AT, untabbable; a
                     real human never fills it, so a non-empty value means a bot */}
-                <div class="hp" aria-hidden="true">
+                <div
+                  class="absolute left-[-9999px] h-px w-px opacity-0"
+                  aria-hidden="true"
+                >
                   <label>
                     Leave this empty
                     <input
@@ -377,11 +470,18 @@ export default function Home() {
                     />
                   </label>
                 </div>
-                <div class="send-row">
-                  <button ref={sendRef} class="send" type="submit">
+                <div class="flex flex-wrap items-center gap-[1.2rem]">
+                  <button
+                    ref={sendRef}
+                    class="send relative isolate cursor-pointer border border-[var(--line2)] bg-transparent px-[1.15rem] py-[0.6rem] text-[0.86rem] font-bold tracking-[0.02em] text-white transition-[border-color] duration-200"
+                    type="submit"
+                  >
                     <span aria-hidden="true">{"> "}</span>send_message
                   </button>
-                  <span class="form-status text-neutral-300" role="status">
+                  <span
+                    class="min-h-[1.2em] text-[0.78rem] whitespace-pre-wrap text-neutral-300"
+                    role="status"
+                  >
                     <Show when={status()}>
                       {(s) => (
                         <span
@@ -402,22 +502,21 @@ export default function Home() {
         </section>
       </main>
 
-      <footer>
-        <div class="col">
-          {/* GitHub — icon only, far-left. Not a FillLink: that component renders
-              no accessible name for an icon-only link, so a plain <a> carries the
-              aria-label. The icon is a masked <span> (.ic-github) — its box
-              background paints through the glyph, going rainbow on hover. */}
-          <ul class="links links-left">
+      <footer class="fixed bottom-0 left-0 right-[var(--sbw,0px)] z-40 flex h-[var(--footer-h)] items-center border-t border-[var(--line2)] bg-black/72 backdrop-blur-[10px]">
+        <div class={`${col} flex flex-wrap items-center gap-[0.6rem_1.6rem] text-[0.78rem]`}>
+          {/* GitHub — icon only, far-left. The icon is a masked <span>
+              (.ic-github) — its box background paints through the glyph, going
+              rainbow on its own hover (see .links-left a:hover .ic). */}
+          <ul class="links-left mr-auto flex list-none items-center gap-[1.4rem]">
             <li>
               <a
-                class="foot-ic"
+                class="inline-flex items-center"
                 href="https://github.com/alexlapwood"
                 target="_blank"
                 rel="noopener"
                 aria-label="GitHub"
               >
-                <span class="ic ic-github" aria-hidden="true" />
+                <span class="ic ic-github block" aria-hidden="true" />
               </a>
             </li>
           </ul>
@@ -425,32 +524,40 @@ export default function Home() {
               the per-leaf data-rainbow-item marks make each link a slice of one
               continuous rainbow; only the hovered link lights (see onMount + the
               scoped CSS). */}
-          <ul class="links links-right" data-rainbow-group>
+          <ul
+            class="flex list-none items-center gap-[1.4rem]"
+            data-rainbow-group
+          >
             <li>
               <a
-                class="foot-ic"
+                class="inline-flex items-center"
                 href="https://www.linkedin.com/in/alexlapwood"
                 target="_blank"
                 rel="noopener"
                 aria-label="LinkedIn"
               >
-                <span class="ic ic-linkedin" aria-hidden="true" data-rainbow-item />
+                <span
+                  class="ic ic-linkedin block"
+                  aria-hidden="true"
+                  data-rainbow-item
+                />
               </a>
             </li>
             <li>
-              {/* Email is a plain <a> (was a FillLink): dropping FillLink stops
-                  its self-applied cursor-tracked magnet from fighting the group
-                  rainbow. Each link is a contiguous slice of one continuous
-                  var(--rainbow) spanning the right group — this address + its
-                  envelope icon, plus the LinkedIn icon — but only the hovered
-                  link lights (its icon + text together). Resting state stays
-                  white (text-white + the icon's currentColor box). */}
+              {/* Email — a plain <a>; each link is a contiguous slice of one
+                  continuous var(--rainbow) spanning the right group, but only the
+                  hovered link lights (its icon + text together). Resting state
+                  stays white (text-white + the icon's currentColor box). */}
               <a
-                class="mail text-white"
+                class="inline-flex items-center text-white"
                 href="mailto:contact@alexlapwood.com"
                 data-rainbow-item
               >
-                <span class="ic ic-mail" aria-hidden="true" data-rainbow-item />
+                <span
+                  class="ic ic-mail mr-[0.9ch] inline-block align-[-0.18em]"
+                  aria-hidden="true"
+                  data-rainbow-item
+                />
                 contact@alexlapwood.com
               </a>
             </li>

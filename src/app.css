@@ -15,6 +15,9 @@
 }
 
 :root {
+  /* Dark site — tell the browser so it paints native UI (scrollbars, autofill,
+     form controls, spinners) dark instead of the OS default light. */
+  color-scheme: dark;
   /* The rainbow — the site's single accent. Red is pinned at both ends. */
   --rainbow: linear-gradient(
     90deg,
@@ -46,15 +49,18 @@
   --spin-dur: 1.3s;
 }
 
-/* ── Reset ──────────────────────────────────────────────────────────────── */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+/* No bespoke reset: Tailwind's Preflight (in @layer base) already sets
+   box-sizing: border-box and zeroes margin/padding on every element, and being
+   layered it lets the utility classes still win. A plain unlayered `* {}` reset
+   would instead override those utilities (unlayered beats layered). */
 
-html {
-  scroll-behavior: smooth;
+/* Lock the document so it never scrolls itself: with height pinned and body
+   overflow hidden, mobile browser chrome (iOS Chrome/Safari URL + tab bars) can't
+   collapse/expand on scroll. The .st page root is the scroll container instead
+   (src/routes/index.tsx owns scroll-behavior there). */
+html,
+body {
+  height: 100%;
 }
 
 body {
@@ -62,5 +68,5 @@ body {
   color: var(--fg);
   font-family: "Raleway", system-ui, sans-serif;
   line-height: 1.5;
-  overflow-x: hidden;
+  overflow: hidden;
 }

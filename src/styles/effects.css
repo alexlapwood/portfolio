@@ -1,13 +1,11 @@
 /* ── Shared effects layer ────────────────────────────────────────────────────
    The bespoke, reused interaction styles live here once as semantic classes,
-   shared because every link (and later, card) reuses them. Tokens, @property,
-   fonts and the reset stay in app.css; per-frame cursor work stays in the
-   components' rAF wiring. Ported from prototype/index.html.
+   shared because every link reuses them. Tokens, @property, fonts and the reset
+   stay in app.css; per-frame cursor work stays in the rAF wiring.
 
    Link interaction primitives:
-     - .l-bracket : angle-bracket reveal (BracketLink)
-     - .l-fill    : magnet rainbow text-fill (FillLink)
-     - .l-line    : expanding underline + magnet fill (LineLink)
+     - .l-fill : magnet rainbow text-fill (the home wordmark)
+     - .l-line : expanding underline + magnet fill (the nav links)
 */
 
 /* Magnet rainbow text-fill — white until hover, then the rainbow shows through
@@ -27,30 +25,6 @@
 .l-fill:hover,
 .l-line:hover {
   -webkit-text-fill-color: transparent;
-}
-
-/* Angle-bracket reveal — both brackets slide in + fade up on hover; cyan. */
-.l-bracket::before,
-.l-bracket::after {
-  display: inline-block;
-  opacity: 0;
-  color: #00b8ff;
-  transition: 0.25s ease;
-}
-.l-bracket::before {
-  content: "<";
-  margin-right: 0.12em;
-  transform: translateX(0.4em);
-}
-.l-bracket::after {
-  content: ">";
-  margin-left: 0.12em;
-  transform: translateX(-0.4em);
-}
-.l-bracket:hover::before,
-.l-bracket:hover::after {
-  opacity: 1;
-  transform: translateX(0);
 }
 
 /* Expanding underline — grows middle-out on hover, its gradient kept in sync
