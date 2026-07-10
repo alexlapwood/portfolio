@@ -15,7 +15,7 @@ import type { ContactEmail, ContactTransport } from "~/lib/resendTransport";
 const config: ContactConfig = {
   apiKey: "test",
   to: "contact@alexlapwood.com",
-  from: "Portfolio Contact <noreply@send.alexlapwood.com>",
+  from: "Portfolio Contact <noreply@alexlapwood.com>",
 };
 
 const input = (over: Partial<DeliverInput> = {}): DeliverInput => ({
@@ -91,6 +91,19 @@ describe("buildContactEmail", () => {
     expect(email.to).toBe(config.to);
     expect(email.from).toBe(config.from);
   });
+
+  it("includes a themed HTML body alongside the plain-text fallback", () => {
+    const email = buildContactEmail(
+      { name: "Ada", email: "ada@example.com", message: "hi" },
+      config,
+    );
+    expect(typeof email.html).toBe("string");
+    expect(email.html.length).toBeGreaterThan(0);
+    expect(email.html).toContain("Ada");
+    expect(email.html).toContain("ada@example.com");
+    // The plain-text fallback is untouched.
+    expect(email.text).toContain("New message via alexlapwood.com");
+  });
 });
 
 describe("contactConfigFromEnv", () => {
@@ -107,7 +120,7 @@ describe("contactConfigFromEnv", () => {
       expect(contactConfigFromEnv()).toEqual({
         apiKey: "",
         to: "contact@alexlapwood.com",
-        from: "Portfolio Contact <noreply@send.alexlapwood.com>",
+        from: "Portfolio Contact <noreply@alexlapwood.com>",
       });
     } finally {
       // restore whatever the runner had, so other tests see a clean env

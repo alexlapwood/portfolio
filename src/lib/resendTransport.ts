@@ -13,6 +13,7 @@ export type ContactEmail = {
   replyTo: string; // set to the visitor's address so a reply reaches them
   subject: string;
   text: string;
+  html: string; // themed terminal-aesthetic body; `text` is the fallback
 };
 
 export type TransportResult = { ok: true } | { ok: false; error: string };
@@ -50,6 +51,7 @@ export function createResendTransport(apiKey: string): ContactTransport {
           reply_to: email.replyTo,
           subject: email.subject,
           text: email.text,
+          html: email.html,
         }),
       });
       if (!res.ok) {

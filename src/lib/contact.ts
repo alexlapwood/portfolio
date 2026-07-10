@@ -5,15 +5,18 @@
 // The "use server" action in ~/server/contact.ts is a thin wrapper that reads
 // FormData + env + the per-IP store and calls deliverContact.
 
+import { renderContactEmailHtml } from "~/lib/contactEmailHtml";
 import {
   contactSubmission,
   type CleanSubmission,
 } from "~/lib/contactSubmission";
 import type { ContactEmail, ContactTransport } from "~/lib/resendTransport";
 
-// Env-configurable addresses. The domain is alexlapwood.com: notifications land
-// in the contact@ inbox (MXRoute), and Resend sends from the verified sending
-// subdomain (send.alexlapwood.com). Overridable via CONTACT_TO / CONTACT_FROM.
+// Env-configurable addresses. Notifications land in whatever inbox CONTACT_TO
+// points to, and the from address must sit on the Resend-verified apex domain
+// alexlapwood.com (DKIM resend._domainkey); send.alexlapwood.com is only the
+// return-path / MAIL FROM subdomain.
+// Overridable via CONTACT_TO / CONTACT_FROM.
 export type ContactConfig = { apiKey: string; to: string; from: string };
 
 // What the form surfaces: an ok/err flag plus terminal-style feedback text.
@@ -37,7 +40,7 @@ export function contactConfigFromEnv(): ContactConfig {
   return {
     apiKey: process.env.RESEND_API_KEY ?? "",
     to: process.env.CONTACT_TO ?? "contact@alexlapwood.com",
-    from: process.env.CONTACT_FROM ?? "Portfolio Contact <noreply@send.alexlapwood.com>",
+    from: process.env.CONTACT_FROM ?? "Portfolio Contact <noreply@alexlapwood.com>",
   };
 }
 
@@ -53,6 +56,7 @@ export function buildContactEmail(
     replyTo: value.email,
     subject: `Portfolio contact from ${value.name}`,
     text: `New message via alexlapwood.com\n\nName: ${value.name}\nEmail: ${value.email}\n\n${value.message}\n`,
+    html: renderContactEmailHtml(value),
   };
 }
 
