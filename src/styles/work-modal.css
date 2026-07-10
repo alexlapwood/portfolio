@@ -1,0 +1,68 @@
+/* WorkModal enter/exit mechanics — only the bits Tailwind-in-JSX can't express:
+   the transition timing + the closed→open state deltas. Everything else (dead
+   black surface, hairline borders, mono type, colour) is Tailwind utilities on
+   the panel in src/components/WorkModal.tsx. Imported by the home route.
+
+   The modal is dependency-free (no solid-transition-group): the component mounts
+   the panel in its CLOSED state, flips `.is-open` on the next frame to run the
+   enter transition, and on close removes `.is-open` then unmounts after the exit
+   transition has elapsed (see CLOSE_MS in WorkModal.tsx — keep it in sync with
+   the longest duration below). Crisp + technical: a short backdrop fade and a
+   panel that scales/rises into place with a thin rainbow strip across its top. */
+
+/* Backdrop — a quick fade only. */
+.wm-backdrop {
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+.wm-backdrop.is-open {
+  opacity: 1;
+}
+
+/* Panel — opacity + a small rise and scale-up, on a deliberate ease-out so it
+   settles rather than pops. transform-origin low-centre so it grows upward from
+   where the backdrop centres it. */
+.wm-panel {
+  opacity: 0;
+  transform: translateY(14px) scale(0.975);
+  transform-origin: 50% 60%;
+  transition:
+    opacity 200ms ease,
+    transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.wm-panel.is-open {
+  opacity: 1;
+  transform: none;
+}
+
+/* Thin rainbow accent hairline across the very top of the panel — the site's
+   single accent, here as a crisp 2px strip (not a soft glow). It wipes in from
+   the left as the panel opens, echoing the Work-card flow-ring. */
+.wm-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--rainbow);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+.wm-panel.is-open::before {
+  transform: scaleX(1);
+}
+
+/* Respect reduced-motion: keep the fade, drop the movement + the accent wipe. */
+@media (prefers-reduced-motion: reduce) {
+  .wm-panel {
+    transform: none;
+    transition: opacity 200ms ease;
+  }
+  .wm-panel::before {
+    transition: none;
+    transform: scaleX(1);
+  }
+}

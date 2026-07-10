@@ -1,8 +1,11 @@
 import { createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import { useAction } from "@solidjs/router";
 import { cursorFill } from "~/components/links/cursorFill";
 import { useMagnetFill } from "~/components/links/useMagnetFill";
 import { NameHero } from "~/components/name";
+import { WorkModal, type Project } from "~/components/WorkModal";
 import { magnetGradient } from "~/lib/magnetGradient";
+import { submitContact } from "~/server/contact";
 import "../styles/shader-terminal.css";
 
 // Each project's "thumbnail" is now its live site's favicon, imported as a Vite
@@ -16,61 +19,106 @@ import stardewThumb from "../assets/favicons/stardew_planner.png";
 import buildItThumb from "../assets/favicons/build_it.png";
 import dirtySouthThumb from "../assets/favicons/dirty_south.png";
 
-// The Work index. Every row is a live project: a navigable <a> opening the site
-// in a new tab, with an imported, fingerprinted thumbnail image.
-type Project = {
-  title: string;
-  summary: string;
-  href: string;
-  thumb: string;
-  alt: string;
-  // Marks the thumbnail as pixel-art so its <img> gets crisp nearest-neighbour
-  // scaling (image-rendering: pixelated) instead of the browser's default smooth
-  // resampling. Only Stardew Planner's favicon is a tiny 16×16 sprite scaled up
-  // to 42px; the other four are real high-res PNGs that must stay smooth.
-  pixelated?: boolean;
-};
+// Per-project screenshots for the detail modal. Copied out of the legacy
+// `old/public/img/<id>/screenshots` set into src/assets/work/<id>/ and imported
+// the same way as the favicons above — Vite bundles + fingerprints each and
+// hands back a resolved URL, so nothing reaches into the un-served `old/` folder
+// at runtime. Ordered narratively (the sequence the modal shows them in).
+import spotifyShot1 from "../assets/work/spotify_playlist/page-1.png";
+import spotifyShot2 from "../assets/work/spotify_playlist/page-2.png";
+import spotifyShot3 from "../assets/work/spotify_playlist/page-3.png";
+import wumpaShot1 from "../assets/work/wumpa_time/page-1.png";
+import wumpaShot2 from "../assets/work/wumpa_time/page-2.png";
+import stardewShot1 from "../assets/work/stardew_planner/planner.png";
+import buildItShot1 from "../assets/work/build_it/login.jpg";
+import buildItShot2 from "../assets/work/build_it/projects.jpg";
+import buildItShot3 from "../assets/work/build_it/project.jpg";
+import buildItShot4 from "../assets/work/build_it/project-settings.jpg";
+import dirtySouthShot1 from "../assets/work/dirty_south/home.jpg";
+import dirtySouthShot2 from "../assets/work/dirty_south/product-category.jpg";
+import dirtySouthShot3 from "../assets/work/dirty_south/product.jpg";
+import dirtySouthShot4 from "../assets/work/dirty_south/cart.jpg";
+import dirtySouthShot5 from "../assets/work/dirty_south/checkout.jpg";
+
+// The Work index. Every row is a live project. The `Project` shape is owned by
+// WorkModal (its data contract); a row is now a <button> that opens that in-page
+// detail modal — which holds the write-up, screenshots, and the links-out — so
+// the summary table itself no longer navigates straight to the live site.
+// TODO(Alex): add `repo` URLs (public source) so the modal's repo link-out shows
+// — left off here rather than guessing URLs.
 
 const WORK: Project[] = [
   {
     title: "Spotify Playlist",
+    kind: "PWA",
     summary:
       "Generate a fresh playlist from the artists of any Spotify playlist.",
+    // Drafted from the legacy site's own copy — Alex's words, but confirm before
+    // publishing. // TODO(Alex): confirm copy
+    description:
+      "Use the artists on any Spotify playlist as the template for a brand-new one. A friendly UI over the Spotify API, shipped as a progressive web app for Android, iOS, macOS and the web.",
     href: "https://spotifyplaylist.app",
     thumb: spotifyThumb,
     alt: "Spotify Playlist icon",
+    screenshots: [spotifyShot1, spotifyShot2, spotifyShot3],
   },
   {
     title: "Wumpa Time",
+    kind: "PWA",
     summary:
       "Time tracker for Crash Team Racing Nitro-Fueled — chase max Wumpa Coins.",
+    // Drafted from the legacy site's own copy. // TODO(Alex): confirm copy
+    description:
+      "A time tracker for Crash Team Racing Nitro-Fueled that shows how long is left to collect the day's maximum Wumpa Coins. Built as a progressive web app for Android, iOS, macOS and the web.",
     href: "https://wumpa.app",
     thumb: wumpaThumb,
     alt: "Wumpa Time icon",
+    screenshots: [wumpaShot1, wumpaShot2],
   },
   {
     title: "Stardew Planner",
+    kind: "PWA",
     summary:
       "Plan a Stardew Valley farm: crop growth, sprinklers and scarecrow coverage.",
+    // Drafted from the legacy site's own copy. // TODO(Alex): confirm copy
+    description:
+      "A planning tool for Stardew Valley farm layouts: visualise how crops grow across the season and where to place sprinklers and scarecrows for full coverage.",
     href: "https://stardewplanner.app",
     thumb: stardewThumb,
     alt: "Stardew Planner icon",
     // 16×16 pixel-art favicon scaled to 42px — render with crisp pixel scaling.
     pixelated: true,
+    screenshots: [stardewShot1],
   },
   {
     title: "Build It",
+    kind: "WEB APP",
     summary: "Material-Design web app for teams to discuss project documents.",
+    // Real copy from old/public/projects.json (Build-It entry).
+    description:
+      "Build-It is a web application I created to help teams discuss project documents. By following Google’s Material Design guidelines it gives users a clean interface and an intuitive experience, and it’s fully responsive with significant mobile optimisation.",
     href: "https://host-it.co.nz/~buildit",
     thumb: buildItThumb,
     alt: "Build It icon",
+    screenshots: [buildItShot1, buildItShot2, buildItShot3, buildItShot4],
   },
   {
     title: "Dirty South",
+    kind: "STORE",
     summary: "Online store taking a kiwi clothing brand to customers worldwide.",
+    // Real copy from old/public/projects.json (Dirty South entry).
+    description:
+      "Dirty South’s online store is designed to promote their unique kiwi branding and help reach customers across the globe. The site is fully responsive, making it mobile friendly and easily accessible for shoppers.",
     href: "https://dirtysouth.co.nz",
     thumb: dirtySouthThumb,
     alt: "Dirty South icon",
+    screenshots: [
+      dirtySouthShot1,
+      dirtySouthShot2,
+      dirtySouthShot3,
+      dirtySouthShot4,
+      dirtySouthShot5,
+    ],
   },
 ];
 
@@ -106,7 +154,13 @@ export default function Home() {
   let homeRef!: HTMLAnchorElement;
   let sendRef!: HTMLButtonElement;
   const [status, setStatus] = createSignal<FormStatus | null>(null);
-  let sendTimer: number | undefined;
+  // Tracks the in-flight server request so the button can disable while sending.
+  const [sending, setSending] = createSignal(false);
+  // The Work project whose detail modal is open (null = closed). Setting it opens
+  // the modal; the modal captures/returns focus and locks page scroll itself.
+  const [active, setActive] = createSignal<Project | null>(null);
+  // useAction gives us a plain awaitable bound to the SolidStart server action.
+  const sendContact = useAction(submitContact);
   const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   onMount(() => {
@@ -197,12 +251,9 @@ export default function Home() {
     });
   });
 
-  onCleanup(() => {
-    if (sendTimer) clearTimeout(sendTimer);
-  });
-
-  function handleSubmit(e: Event) {
+  async function handleSubmit(e: Event) {
     e.preventDefault();
+    if (sending()) return; // ignore double-submits while a send is in flight
     const form = e.currentTarget as HTMLFormElement;
     const data = new FormData(form);
     const name = String(data.get("name") ?? "").trim();
@@ -210,7 +261,9 @@ export default function Home() {
     const message = String(data.get("message") ?? "").trim();
     const honey = String(data.get("company") ?? "");
 
-    if (honey) return; // bot tripped the honeypot
+    if (honey) return; // bot tripped the honeypot — silently ignore
+    // Fast client-side pre-check so obvious mistakes get instant feedback; the
+    // server action re-runs the same policy and is the authoritative gate.
     if (!name || !email || !message) {
       setStatus({ kind: "err", text: "! all fields are required." });
       return;
@@ -219,13 +272,24 @@ export default function Home() {
       setStatus({ kind: "err", text: "! that email looks malformed." });
       return;
     }
-    // The form validates only — it never actually delivers (real sending is a
-    // separate issue). The brief "sending…" → "queued." beat is just UI feedback.
+    // The real delivery path: the server action validates again, applies the
+    // spam policy, and emails via Resend, returning { ok, text } we surface
+    // straight to the user (keeping the "› sending…" → "✓ sent." beat).
+    setSending(true);
     setStatus({ kind: "info", text: "› sending…" });
-    sendTimer = window.setTimeout(() => {
-      setStatus({ kind: "ok", text: "✓ queued." });
-      form.reset();
-    }, 520);
+    try {
+      const result = await sendContact(data);
+      if (result.ok) {
+        setStatus({ kind: "ok", text: result.text });
+        form.reset();
+      } else {
+        setStatus({ kind: "err", text: result.text });
+      }
+    } catch {
+      setStatus({ kind: "err", text: "! couldn't send — please try again." });
+    } finally {
+      setSending(false);
+    }
   }
 
   return (
@@ -335,11 +399,16 @@ export default function Home() {
               <For each={WORK}>
                 {(p) => (
                   <li>
-                    <a
-                      class={`row group relative isolate ${rowGrid} max-[820px]:grid-cols-[52px_minmax(0,1fr)_1.4rem] max-[820px]:gap-x-[0.9rem] max-[820px]:gap-y-[0.15rem] max-[820px]:[grid-template-areas:'thumb_title_arrow'_'thumb_summ_arrow']`}
-                      href={p.href}
-                      target="_blank"
-                      rel="noopener"
+                    {/* The row is now a <button> that opens the in-page detail
+                        modal (it no longer navigates out — the modal owns the
+                        links-out). All the table visuals — grid, .flow-ring
+                        hover border, thumb/title/summary/arrow — are preserved;
+                        the extra classes just neutralise the native button chrome
+                        (full-width, transparent, borderless, left-aligned). */}
+                    <button
+                      type="button"
+                      onClick={() => setActive(p)}
+                      class={`row group relative isolate w-full cursor-pointer appearance-none border-0 bg-transparent text-left text-inherit ${rowGrid} max-[820px]:grid-cols-[52px_minmax(0,1fr)_1.4rem] max-[820px]:gap-x-[0.9rem] max-[820px]:gap-y-[0.15rem] max-[820px]:[grid-template-areas:'thumb_title_arrow'_'thumb_summ_arrow']`}
                     >
                       {/* shared flowing-rainbow border, hover-only for cards
                           (position:absolute, so it's out of the row's grid) */}
@@ -364,8 +433,8 @@ export default function Home() {
                       >
                         ↗
                       </span>
-                      <span class="sr-only"> (opens in a new tab)</span>
-                    </a>
+                      <span class="sr-only"> — view details</span>
+                    </button>
                   </li>
                 )}
               </For>
@@ -483,8 +552,9 @@ export default function Home() {
                 <div class="flex flex-wrap items-center gap-[1.2rem]">
                   <button
                     ref={sendRef}
-                    class="send relative isolate cursor-pointer border border-[var(--line2)] bg-transparent px-[1.15rem] py-[0.6rem] text-[0.86rem] font-bold tracking-[0.02em] text-white transition-[border-color] duration-200"
+                    class="send relative isolate cursor-pointer border border-[var(--line2)] bg-transparent px-[1.15rem] py-[0.6rem] text-[0.86rem] font-bold tracking-[0.02em] text-white transition-[border-color] duration-200 disabled:cursor-not-allowed disabled:opacity-60"
                     type="submit"
+                    disabled={sending()}
                   >
                     <span aria-hidden="true">{"> "}</span>send_message
                   </button>
@@ -574,6 +644,13 @@ export default function Home() {
           </ul>
         </div>
       </footer>
+
+      {/* In-page project detail modal. Always mounted so it can play its own
+          exit animation; `active()` (null = closed) is the open project. It's a
+          child of `.st` so its fixed backdrop shares this stacking context and
+          can lock this element's scroll. Closing just clears `active` — the modal
+          restores focus to the triggering row itself. */}
+      <WorkModal project={active()} onClose={() => setActive(null)} />
     </div>
   );
 }
